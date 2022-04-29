@@ -1,11 +1,10 @@
+use crate::game::prelude::GamePlugin;
 use bevy::{prelude::*, window::WindowMode};
-use game_state::GamePlugin;
 use menu_state::*;
 
-mod game_state;
+mod game;
 mod menu_state;
 mod utilities;
-mod walls;
 
 const BACKGROUND_COLOR: Color = Color::rgb(0.20, 0.20, 0.20);
 fn main() {

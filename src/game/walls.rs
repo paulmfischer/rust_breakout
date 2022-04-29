@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::utilities::despawn_entities;
+use crate::{menu_state::GameState, utilities::despawn_entities};
 
 const WALL_THICKNESS: f32 = 10.0;
 const WALL_COLOR: Color = Color::rgb(0.8, 0.8, 0.8);
@@ -9,6 +9,15 @@ pub const Y_OFFSET: f32 = -15.0;
 
 #[derive(Component)]
 pub struct Wall;
+
+pub struct WallsPlugin;
+
+impl Plugin for WallsPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_system_set(SystemSet::on_enter(GameState::InGame).with_system(render_walls))
+            .add_system_set(SystemSet::on_exit(GameState::InGame).with_system(despawn_walls));
+    }
+}
 
 pub fn render_walls(mut commands: Commands, windows: Res<Windows>) {
     let window = windows.get_primary().unwrap();
