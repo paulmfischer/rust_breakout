@@ -4,7 +4,7 @@ use crate::utilities::despawn_entities;
 
 const WALL_THICKNESS: f32 = 10.0;
 const WALL_COLOR: Color = Color::rgb(0.8, 0.8, 0.8);
-const X_OFFSET: f32 = -100.0;
+pub const X_OFFSET: f32 = -100.0;
 pub const Y_OFFSET: f32 = -15.0;
 
 #[derive(Component)]

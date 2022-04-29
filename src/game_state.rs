@@ -21,7 +21,11 @@ impl Plugin for GamePlugin {
                     .with_system(despawn_entities::<GameEntity>)
                     .with_system(crate::walls::despawn_walls),
             )
-            .add_system_set(SystemSet::on_update(GameState::InGame).with_system(handle_exit));
+            .add_system_set(
+                SystemSet::on_update(GameState::InGame)
+                    .with_system(handle_exit)
+                    .with_system(handle_paddle_move),
+            );
     }
 }
 
@@ -43,9 +47,11 @@ struct Velocity(Vec2);
 // Defines the amount of time that should elapse between each physics step.
 // const TIME_STEP: f32 = 1.0 / 60.0;
 
-const PADDLE_SIZE: Vec3 = const_vec3!([120.0, 20.0, 0.0]);
+const PADDLE_WIDTH: f32 = 120.0;
+const PADDLE_SIZE: Vec3 = const_vec3!([PADDLE_WIDTH, 20.0, 0.0]);
+const PADDLE_SPEED: f32 = 12.0;
 // How close can the paddle get to the wall
-// const PADDLE_PADDING: f32 = 10.0;
+const PADDLE_PADDING: f32 = 20.0;
 
 // We set the z-value of the ball to 1 so it renders on top in the case of overlapping sprites.
 const BALL_STARTING_POSITION: Vec3 = const_vec3!([0.0, -50.0, 1.0]);
@@ -149,4 +155,33 @@ fn handle_exit(keyboard_input: Res<Input<KeyCode>>, mut exit: EventWriter<AppExi
     if keyboard_input.just_pressed(KeyCode::Escape) {
         exit.send(AppExit);
     }
+}
+
+fn handle_paddle_move(
+    keyboard_input: Res<Input<KeyCode>>,
+    windows: Res<Windows>,
+    mut query: Query<&mut Transform, With<Paddle>>,
+) {
+    let window = windows.get_primary().unwrap();
+    let arena_width = window.width();
+    let mut direction = 0.0;
+    let mut player_transform = query.single_mut();
+
+    if keyboard_input.pressed(KeyCode::Right) {
+        direction += 1.0;
+    }
+
+    if keyboard_input.pressed(KeyCode::Left) {
+        direction -= 1.0;
+    }
+
+    let new_position = player_transform.translation.x + direction * PADDLE_SPEED;
+    let left_bound = calculate_wall_boundary(arena_width) * -1.0 + PADDLE_PADDING;
+    let right_bound = calculate_wall_boundary(arena_width) - PADDLE_PADDING;
+
+    player_transform.translation.x = new_position.clamp(left_bound, right_bound);
+}
+
+fn calculate_wall_boundary(arena_width: f32) -> f32 {
+    arena_width / 2.0 + crate::walls::X_OFFSET - (PADDLE_WIDTH / 2.0)
 }
