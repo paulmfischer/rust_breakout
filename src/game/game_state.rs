@@ -1,7 +1,7 @@
 use crate::{menu_state::GameState, utilities::despawn_entities};
 use bevy::{app::AppExit, prelude::*};
 
-use super::{ball::BallPlugin, paddle::PaddlePlugin, walls::WallsPlugin};
+use super::{ball::BallPlugin, paddle::PaddlePlugin, walls::WallsPlugin, components::GameEntity};
 
 pub struct GamePlugin;
 
@@ -18,12 +18,6 @@ impl Plugin for GamePlugin {
             .add_system_set(SystemSet::on_update(GameState::InGame).with_system(handle_exit));
     }
 }
-
-#[derive(Component)]
-pub struct GameEntity;
-
-#[derive(Component)]
-pub struct Collider;
 
 // Defines the amount of time that should elapse between each physics step.
 // const TIME_STEP: f32 = 1.0 / 60.0;

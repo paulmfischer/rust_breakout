@@ -1,10 +1,9 @@
 use crate::{
-    game::game_state::{Collider, GameEntity},
     menu_state::GameState,
 };
 use bevy::{math::const_vec3, prelude::*};
 
-use super::walls::{X_OFFSET, Y_OFFSET};
+use super::{walls::{X_OFFSET, Y_OFFSET}, components::{Collider, GameEntity}, };
 
 const PADDLE_WIDTH: f32 = 120.0;
 const PADDLE_SIZE: Vec3 = const_vec3!([PADDLE_WIDTH, 20.0, 0.0]);
@@ -76,7 +75,6 @@ fn handle_paddle_move(
     let right_bound = calculate_wall_boundary(arena_width) - PADDLE_PADDING;
 
     player_transform.translation.x = new_position.clamp(left_bound, right_bound);
-    println!("paddle translation {}", player_transform.translation);
 }
 
 fn calculate_wall_boundary(arena_width: f32) -> f32 {

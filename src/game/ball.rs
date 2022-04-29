@@ -6,12 +6,12 @@ use bevy::{
 
 use crate::menu_state::GameState;
 
-use super::{paddle::Paddle, prelude::GameEntity, Collider};
+use super::{components::{GameEntity, Collider}};
 
 // We set the z-value of the ball to 1 so it renders on top in the case of overlapping sprites.
-const BALL_STARTING_POSITION: Vec3 = const_vec3!([0.0, -50.0, 1.0]);
+const BALL_STARTING_POSITION: Vec3 = const_vec3!([0.0, -150.0, 1.0]);
 const BALL_SIZE: Vec3 = const_vec3!([30.0, 30.0, 0.0]);
-const BALL_SPEED: f32 = 5.0;
+const BALL_SPEED: f32 = 8.0;
 const BALL_COLOR: Color = Color::rgb(1.0, 0.5, 0.5);
 const INITIAL_BALL_DIRECTION: Vec2 = const_vec2!([0.5, -0.5]);
 
@@ -42,8 +42,8 @@ fn render_ball(mut commands: Commands) {
         .insert(GameEntity)
         .insert_bundle(SpriteBundle {
             transform: Transform {
-                scale: BALL_SIZE,
                 translation: BALL_STARTING_POSITION,
+                scale: BALL_SIZE,
                 ..default()
             },
             sprite: Sprite {
@@ -60,7 +60,7 @@ fn apply_velocity(mut query: Query<(&mut Transform, &Velocity)>) {
         transform.translation.x += velocity.x;
         transform.translation.y += velocity.y;
 
-        println!("ball translation {}", transform.translation);
+        // println!("ball translation {}", transform.translation);
     }
 }
 
@@ -68,14 +68,13 @@ fn check_for_collisions(
     mut commands: Commands,
     // mut scoreboard: ResMut<Scoreboard>,
     mut ball_query: Query<(&mut Velocity, &Transform), With<Ball>>,
-    collider_query: Query<(Entity, &Transform, Option<&Paddle>), With<Collider>>,
-    // mut collision_events: EventWriter<CollisionEvent>,
+    collider_query: Query<(Entity, &Transform), With<Collider>>,
 ) {
     let (mut ball_velocity, ball_transform) = ball_query.single_mut();
     let ball_size = ball_transform.scale.truncate();
 
     // check collision with walls
-    for (collider_entity, transform, paddle) in collider_query.iter() {
+    for (collider_entity, transform) in collider_query.iter() {
         let collision = collide(
             ball_transform.translation,
             ball_size,
@@ -83,11 +82,8 @@ fn check_for_collisions(
             transform.scale.truncate(),
         );
 
-        if let Some(pad) = paddle {
-            println!("paddle is in query {}", transform.translation);
-        }
-
         if let Some(collision) = collision {
+            // info!("we have a collision! {:?}, ball: {}, transform: {}", collision, ball_transform.translation, transform.translation);
             // Bricks should be despawned and increment the scoreboard on collision
             // if maybe_brick.is_some() {
             //     scoreboard.score += 1;

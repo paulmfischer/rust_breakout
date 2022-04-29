@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{menu_state::GameState, utilities::despawn_entities};
 
-use super::Collider;
+use super::components::Collider;
 
 const WALL_THICKNESS: f32 = 10.0;
 const WALL_COLOR: Color = Color::rgb(0.8, 0.8, 0.8);
@@ -17,11 +17,11 @@ pub struct WallsPlugin;
 impl Plugin for WallsPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::InGame).with_system(render_walls))
-            .add_system_set(SystemSet::on_exit(GameState::InGame).with_system(despawn_walls));
+            .add_system_set(SystemSet::on_exit(GameState::InGame).with_system(despawn_entities::<Wall>));
     }
 }
 
-pub fn render_walls(mut commands: Commands, windows: Res<Windows>) {
+fn render_walls(mut commands: Commands, windows: Res<Windows>) {
     let window = windows.get_primary().unwrap();
 
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
@@ -31,9 +31,9 @@ pub fn render_walls(mut commands: Commands, windows: Res<Windows>) {
     commands.spawn_bundle(WallBundle::new(WallLocation::Bottom, window));
 }
 
-pub fn despawn_walls(commands: Commands, query: Query<Entity, With<Wall>>) {
-    despawn_entities::<Wall>(commands, query);
-}
+// pub fn despawn_walls(commands: Commands, query: Query<Entity, With<Wall>>) {
+//     despawn_entities::<Wall>(commands, query);
+// }
 
 enum WallLocation {
     Left,
