@@ -188,15 +188,12 @@ fn select_menu_item(
     let menu_action = selected_option_query.single();
 
     if keyboard_input.just_pressed(KeyCode::Return) {
-        println!("Enter pressed!");
         match menu_action {
             MenuButtonAction::Play => {
-                println!("Play!");
                 // app_state.set(GameState::InGame).unwrap();
                 app_state.push(GameState::InGame).unwrap();
             }
             MenuButtonAction::Quit => {
-                println!("Quit!");
                 exit.send(AppExit);
             }
         }

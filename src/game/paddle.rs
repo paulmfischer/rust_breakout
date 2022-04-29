@@ -15,7 +15,7 @@ const PADDLE_COLOR: Color = Color::rgb(0.3, 0.3, 0.7);
 const GAP_BETWEEN_PADDLE_AND_FLOOR: f32 = 60.0;
 
 #[derive(Component)]
-struct Paddle;
+pub struct Paddle;
 
 pub struct PaddlePlugin;
 
@@ -41,7 +41,7 @@ fn render_paddle(mut commands: Commands, windows: Res<Windows>) {
         .insert(GameEntity)
         .insert_bundle(SpriteBundle {
             transform: Transform {
-                translation: Vec3::new(0.0, paddle_position, 0.0),
+                translation: Vec3::new(0.0, paddle_position, 1.0),
                 scale: PADDLE_SIZE,
                 ..default()
             },
@@ -76,6 +76,7 @@ fn handle_paddle_move(
     let right_bound = calculate_wall_boundary(arena_width) - PADDLE_PADDING;
 
     player_transform.translation.x = new_position.clamp(left_bound, right_bound);
+    println!("paddle translation {}", player_transform.translation);
 }
 
 fn calculate_wall_boundary(arena_width: f32) -> f32 {

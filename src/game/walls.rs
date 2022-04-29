@@ -2,6 +2,8 @@ use bevy::prelude::*;
 
 use crate::{menu_state::GameState, utilities::despawn_entities};
 
+use super::Collider;
+
 const WALL_THICKNESS: f32 = 10.0;
 const WALL_COLOR: Color = Color::rgb(0.8, 0.8, 0.8);
 pub const X_OFFSET: f32 = -100.0;
@@ -74,6 +76,7 @@ struct WallBundle {
     #[bundle]
     sprite_bundle: SpriteBundle,
     wall: Wall,
+    collider: Collider,
 }
 
 impl WallBundle {
@@ -94,6 +97,7 @@ impl WallBundle {
                 ..default()
             },
             wall: Wall,
+            collider: Collider,
         }
     }
 }
