@@ -1,34 +1,82 @@
-use crate::menu_state::GameState;
-use bevy::prelude::*;
+use crate::{menu_state::GameState, utilities::despawn_entities, walls::Y_OFFSET};
+use bevy::{
+    app::AppExit,
+    math::{const_vec2, const_vec3},
+    prelude::*,
+};
 
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app
-            // add the app state type
-            .add_state(GameState::InGame)
-            // systems to run only in the main menu
             // setup when entering the state
-            .add_system_set(SystemSet::on_enter(GameState::InGame).with_system(setup_game))
-        // .add_system_set(
-        //     SystemSet::on_update(AppState::MainMenu)
-        //         .with_system(menu_interaction)
-        //         .with_system(select_menu_item),
-        // )
-        // cleanup when exiting the state
-        // .add_system_set(SystemSet::on_exit(AppState::MainMenu).with_system(close_menu))
-        ;
+            .add_system_set(
+                SystemSet::on_enter(GameState::InGame)
+                    .with_system(setup_game)
+                    .with_system(crate::walls::render_walls),
+            )
+            .add_system_set(
+                SystemSet::on_exit(GameState::InGame)
+                    .with_system(despawn_entities::<GameEntity>)
+                    .with_system(crate::walls::despawn_walls),
+            )
+            .add_system_set(SystemSet::on_update(GameState::InGame).with_system(handle_exit));
     }
 }
 
 #[derive(Component)]
 struct GameEntity;
 
+#[derive(Component)]
+struct Paddle;
+
+#[derive(Component)]
+struct Ball;
+
+#[derive(Component)]
+struct Collider;
+
+#[derive(Component, Deref, DerefMut)]
+struct Velocity(Vec2);
+
+// Defines the amount of time that should elapse between each physics step.
+// const TIME_STEP: f32 = 1.0 / 60.0;
+
+const PADDLE_SIZE: Vec3 = const_vec3!([120.0, 20.0, 0.0]);
+// How close can the paddle get to the wall
+// const PADDLE_PADDING: f32 = 10.0;
+
+// We set the z-value of the ball to 1 so it renders on top in the case of overlapping sprites.
+const BALL_STARTING_POSITION: Vec3 = const_vec3!([0.0, -50.0, 1.0]);
+const BALL_SIZE: Vec3 = const_vec3!([30.0, 30.0, 0.0]);
+const BALL_SPEED: f32 = 400.0;
+const INITIAL_BALL_DIRECTION: Vec2 = const_vec2!([0.5, -0.5]);
+
 const SCOREBOARD_FONT_SIZE: f32 = 40.0;
 const SCORE_COLOR: Color = Color::rgb(1.0, 0.5, 0.5);
+// const BRICK_SIZE: Vec2 = const_vec2!([100., 30.]);
+// These values are exact
+// const GAP_BETWEEN_PADDLE_AND_BRICKS: f32 = 270.0;
+// const GAP_BETWEEN_BRICKS: f32 = 5.0;
+const GAP_BETWEEN_PADDLE_AND_FLOOR: f32 = 60.0;
+// These values are lower bounds, as the number of bricks is computed
+// const GAP_BETWEEN_BRICKS_AND_CEILING: f32 = 20.0;
+// const GAP_BETWEEN_BRICKS_AND_SIDES: f32 = 20.0;
 
-fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>) {
+// const BACKGROUND_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
+const PADDLE_COLOR: Color = Color::rgb(0.3, 0.3, 0.7);
+const BALL_COLOR: Color = Color::rgb(1.0, 0.5, 0.5);
+// const BRICK_COLOR: Color = Color::rgb(0.5, 0.5, 1.0);
+// const WALL_COLOR: Color = Color::rgb(0.8, 0.8, 0.8);
+// const TEXT_COLOR: Color = Color::rgb(0.5, 0.5, 1.0);
+
+fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>, windows: Res<Windows>) {
+    let window = windows.get_primary().unwrap();
+    let arena_height = window.height();
+    let paddle_position = -1.0 * (arena_height / 2.0 + Y_OFFSET - GAP_BETWEEN_PADDLE_AND_FLOOR);
+
+    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
     commands.spawn_bundle(UiCameraBundle::default());
 
     // player one score
@@ -57,4 +105,48 @@ fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         })
         .insert(GameEntity);
+
+    // paddle
+    commands
+        .spawn()
+        .insert(Paddle)
+        .insert(Collider)
+        .insert(GameEntity)
+        .insert_bundle(SpriteBundle {
+            transform: Transform {
+                translation: Vec3::new(0.0, paddle_position, 0.0),
+                scale: PADDLE_SIZE,
+                ..default()
+            },
+            sprite: Sprite {
+                color: PADDLE_COLOR,
+                ..default()
+            },
+            ..default()
+        });
+
+    // Ball
+    commands
+        .spawn()
+        .insert(Ball)
+        .insert(GameEntity)
+        .insert_bundle(SpriteBundle {
+            transform: Transform {
+                scale: BALL_SIZE,
+                translation: BALL_STARTING_POSITION,
+                ..default()
+            },
+            sprite: Sprite {
+                color: BALL_COLOR,
+                ..default()
+            },
+            ..default()
+        })
+        .insert(Velocity(INITIAL_BALL_DIRECTION.normalize() * BALL_SPEED));
+}
+
+fn handle_exit(keyboard_input: Res<Input<KeyCode>>, mut exit: EventWriter<AppExit>) {
+    if keyboard_input.just_pressed(KeyCode::Escape) {
+        exit.send(AppExit);
+    }
 }

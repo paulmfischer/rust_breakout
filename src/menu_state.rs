@@ -1,10 +1,12 @@
 use bevy::{app::AppExit, prelude::*};
 
+use crate::utilities::despawn_entities;
+
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum GameState {
     MainMenu,
     InGame,
-    Paused,
+    // Paused,
 }
 
 pub struct MenuPlugin;
@@ -13,7 +15,7 @@ impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
         app
             // add the app state type
-            .add_state(GameState::MainMenu)
+            // .add_state(GameState::MainMenu)
             // systems to run only in the main menu
             // setup when entering the state
             .add_system_set(SystemSet::on_enter(GameState::MainMenu).with_system(setup_menu))
@@ -23,7 +25,13 @@ impl Plugin for MenuPlugin {
                     .with_system(select_menu_item),
             )
             // cleanup when exiting the state
-            .add_system_set(SystemSet::on_exit(GameState::MainMenu).with_system(close_menu));
+            .add_system_set(
+                SystemSet::on_pause(GameState::MainMenu)
+                    .with_system(despawn_entities::<MenuEntity>),
+            )
+            .add_system_set(
+                SystemSet::on_exit(GameState::MainMenu).with_system(despawn_entities::<MenuEntity>),
+            );
     }
 }
 
@@ -43,7 +51,7 @@ enum MenuButtonAction {
 }
 
 #[derive(Component)]
-struct MainMenu;
+struct MenuEntity;
 
 fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     let font = asset_server.load("fonts/FiraSans-Bold.ttf");
@@ -62,7 +70,9 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
         color: TEXT_COLOR,
     };
 
-    commands.spawn_bundle(UiCameraBundle::default());
+    commands
+        .spawn_bundle(UiCameraBundle::default())
+        .insert(MenuEntity);
 
     commands
         .spawn_bundle(NodeBundle {
@@ -75,7 +85,7 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
             color: Color::DARK_GRAY.into(),
             ..default()
         })
-        .insert(MainMenu)
+        .insert(MenuEntity)
         .with_children(|parent| {
             parent.spawn_bundle(TextBundle {
                 style: Style {
@@ -191,8 +201,4 @@ fn select_menu_item(
             }
         }
     }
-}
-
-fn close_menu(mut commands: Commands, query: Query<Entity, With<MainMenu>>) {
-    query.for_each(|entity| commands.entity(entity).despawn_recursive());
 }

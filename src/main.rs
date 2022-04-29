@@ -4,6 +4,8 @@ use menu_state::*;
 
 mod game_state;
 mod menu_state;
+mod utilities;
+mod walls;
 
 const BACKGROUND_COLOR: Color = Color::rgb(0.20, 0.20, 0.20);
 fn main() {
@@ -21,6 +23,6 @@ fn main() {
         .add_plugin(MenuPlugin)
         .add_plugin(GamePlugin)
         .insert_resource(ClearColor(BACKGROUND_COLOR))
-        // .add_state(GameState::MainMenu)
+        .add_state(GameState::MainMenu)
         .run();
 }
