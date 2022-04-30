@@ -17,7 +17,9 @@ pub struct WallsPlugin;
 impl Plugin for WallsPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::InGame).with_system(render_walls))
-            .add_system_set(SystemSet::on_exit(GameState::InGame).with_system(despawn_entities::<Wall>));
+            .add_system_set(
+                SystemSet::on_exit(GameState::InGame).with_system(despawn_entities::<Wall>),
+            );
     }
 }
 
@@ -44,29 +46,28 @@ enum WallLocation {
 
 impl WallLocation {
     fn position(&self, window: &Window) -> Vec2 {
-        let arena_height = window.height();
-        let arena_width = window.width();
+        let window_height = window.height();
+        let window_width = window.width();
 
         match self {
-            WallLocation::Left => Vec2::new((arena_width / 2.0 + X_OFFSET) * -1.0, 0.),
-            WallLocation::Right => Vec2::new(arena_width / 2.0 + X_OFFSET, 0.),
-            WallLocation::Bottom => Vec2::new(0., (arena_height / 2.0 + Y_OFFSET) * -1.0),
-            WallLocation::Top => Vec2::new(0., arena_height / 2.0 + Y_OFFSET),
+            WallLocation::Left => Vec2::new((window_width / 2.0 + X_OFFSET) * -1.0, 0.),
+            WallLocation::Right => Vec2::new(window_width / 2.0 + X_OFFSET, 0.),
+            WallLocation::Bottom => Vec2::new(0., (window_height / 2.0 + Y_OFFSET) * -1.0),
+            WallLocation::Top => Vec2::new(0., window_height / 2.0 + Y_OFFSET),
         }
     }
 
     fn size(&self, window: &Window) -> Vec2 {
-        let arena_height = window.height();
-        let arena_width = window.width();
-        let top_offset = arena_height / 2.0 + Y_OFFSET;
-        let side_wall_size = top_offset * 2.0 + WALL_THICKNESS;
-        let top_wall_size = (arena_width / 2.0 + X_OFFSET) * 2.0 + WALL_THICKNESS;
+        let window_height = window.height();
+        let window_width = window.width();
+        let arena_side_size = (window_height / 2.0 + Y_OFFSET) * 2.0 + WALL_THICKNESS;
+        let arena_top_size = (window_width / 2.0 + X_OFFSET) * 2.0 + WALL_THICKNESS;
 
         match self {
-            WallLocation::Left => Vec2::new(WALL_THICKNESS, side_wall_size),
-            WallLocation::Right => Vec2::new(WALL_THICKNESS, side_wall_size),
-            WallLocation::Bottom => Vec2::new(top_wall_size, WALL_THICKNESS),
-            WallLocation::Top => Vec2::new(top_wall_size, WALL_THICKNESS),
+            WallLocation::Left => Vec2::new(WALL_THICKNESS, arena_side_size),
+            WallLocation::Right => Vec2::new(WALL_THICKNESS, arena_side_size),
+            WallLocation::Bottom => Vec2::new(arena_top_size, WALL_THICKNESS),
+            WallLocation::Top => Vec2::new(arena_top_size, WALL_THICKNESS),
         }
     }
 }

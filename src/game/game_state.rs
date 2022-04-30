@@ -1,7 +1,10 @@
 use crate::{menu_state::GameState, utilities::despawn_entities};
 use bevy::{app::AppExit, prelude::*};
 
-use super::{ball::BallPlugin, paddle::PaddlePlugin, walls::WallsPlugin, components::GameEntity};
+use super::{
+    ball::BallPlugin, bricks::BricksPlugin, components::GameEntity, paddle::PaddlePlugin,
+    walls::WallsPlugin,
+};
 
 pub struct GamePlugin;
 
@@ -10,6 +13,7 @@ impl Plugin for GamePlugin {
         app.add_plugin(PaddlePlugin)
             .add_plugin(BallPlugin)
             .add_plugin(WallsPlugin)
+            .add_plugin(BricksPlugin)
             // setup when entering the state
             .add_system_set(SystemSet::on_enter(GameState::InGame).with_system(setup_game))
             .add_system_set(
@@ -19,19 +23,8 @@ impl Plugin for GamePlugin {
     }
 }
 
-// Defines the amount of time that should elapse between each physics step.
-// const TIME_STEP: f32 = 1.0 / 60.0;
-
 const SCOREBOARD_FONT_SIZE: f32 = 40.0;
 const SCORE_COLOR: Color = Color::rgb(1.0, 0.5, 0.5);
-// const BRICK_SIZE: Vec2 = const_vec2!([100., 30.]);
-// These values are exact
-// const GAP_BETWEEN_PADDLE_AND_BRICKS: f32 = 270.0;
-// const GAP_BETWEEN_BRICKS: f32 = 5.0;
-// const GAP_BETWEEN_PADDLE_AND_FLOOR: f32 = 60.0;
-// These values are lower bounds, as the number of bricks is computed
-// const GAP_BETWEEN_BRICKS_AND_SIDES: f32 = 20.0;
-// const GAP_BETWEEN_BRICKS_AND_CEILING: f32 = 20.0;
 
 fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
