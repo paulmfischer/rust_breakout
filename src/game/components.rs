@@ -8,3 +8,10 @@ pub struct GameEntity;
 
 #[derive(Component)]
 pub struct Brick;
+
+#[derive(Component)]
+pub struct Scoreboard;
+
+pub struct GameData {
+    pub score: i32,
+}

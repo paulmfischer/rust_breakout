@@ -2,7 +2,10 @@ use crate::{menu_state::GameState, utilities::despawn_entities};
 use bevy::{app::AppExit, prelude::*};
 
 use super::{
-    ball::BallPlugin, bricks::BricksPlugin, components::GameEntity, paddle::PaddlePlugin,
+    ball::BallPlugin,
+    bricks::BricksPlugin,
+    components::{GameData, GameEntity, Scoreboard},
+    paddle::PaddlePlugin,
     walls::WallsPlugin,
 };
 
@@ -10,7 +13,8 @@ pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugin(PaddlePlugin)
+        app.insert_resource(GameData { score: 0 })
+            .add_plugin(PaddlePlugin)
             .add_plugin(BallPlugin)
             .add_plugin(WallsPlugin)
             .add_plugin(BricksPlugin)
@@ -19,7 +23,11 @@ impl Plugin for GamePlugin {
             .add_system_set(
                 SystemSet::on_exit(GameState::InGame).with_system(despawn_entities::<GameEntity>),
             )
-            .add_system_set(SystemSet::on_update(GameState::InGame).with_system(handle_exit));
+            .add_system_set(
+                SystemSet::on_update(GameState::InGame)
+                    .with_system(handle_exit)
+                    .with_system(update_score),
+            );
     }
 }
 
@@ -55,6 +63,7 @@ fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>) {
             },
             ..default()
         })
+        .insert(Scoreboard)
         .insert(GameEntity);
 }
 
@@ -62,4 +71,12 @@ fn handle_exit(keyboard_input: Res<Input<KeyCode>>, mut exit: EventWriter<AppExi
     if keyboard_input.just_pressed(KeyCode::Escape) {
         exit.send(AppExit);
     }
+}
+
+fn update_score(
+    game_data: Res<GameData>,
+    mut scoreboard_query: Query<&mut Text, With<Scoreboard>>,
+) {
+    let mut scoreboard_text = scoreboard_query.single_mut();
+    scoreboard_text.sections[0].value = format!("{}", game_data.score);
 }

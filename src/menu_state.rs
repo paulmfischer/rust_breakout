@@ -13,18 +13,12 @@ pub struct MenuPlugin;
 
 impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
-        app
-            // add the app state type
-            // .add_state(GameState::MainMenu)
-            // systems to run only in the main menu
-            // setup when entering the state
-            .add_system_set(SystemSet::on_enter(GameState::MainMenu).with_system(setup_menu))
+        app.add_system_set(SystemSet::on_enter(GameState::MainMenu).with_system(setup_menu))
             .add_system_set(
                 SystemSet::on_update(GameState::MainMenu)
                     .with_system(menu_interaction)
                     .with_system(select_menu_item),
             )
-            // cleanup when exiting the state
             .add_system_set(
                 SystemSet::on_pause(GameState::MainMenu)
                     .with_system(despawn_entities::<MenuEntity>),
@@ -190,7 +184,6 @@ fn select_menu_item(
     if keyboard_input.just_pressed(KeyCode::Return) {
         match menu_action {
             MenuButtonAction::Play => {
-                // app_state.set(GameState::InGame).unwrap();
                 app_state.push(GameState::InGame).unwrap();
             }
             MenuButtonAction::Quit => {

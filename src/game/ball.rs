@@ -3,17 +3,17 @@ use bevy::{
     prelude::*,
     sprite::collide_aabb::{collide, Collision},
 };
+use rand::{thread_rng, Rng};
 
 use crate::menu_state::GameState;
 
-use super::components::{Brick, Collider, GameEntity};
+use super::components::{Brick, Collider, GameData, GameEntity};
 
 // We set the z-value of the ball to 1 so it renders on top in the case of overlapping sprites.
 const BALL_STARTING_POSITION: Vec3 = const_vec3!([0.0, -150.0, 1.0]);
 const BALL_SIZE: Vec3 = const_vec3!([30.0, 30.0, 0.0]);
-const BALL_SPEED: f32 = 125.0;
+const BALL_SPEED: f32 = 165.0;
 const BALL_COLOR: Color = Color::rgb(1.0, 0.5, 0.5);
-const INITIAL_BALL_DIRECTION: Vec2 = const_vec2!([0.5, -0.5]);
 
 #[derive(Component)]
 struct Ball;
@@ -35,6 +35,9 @@ impl Plugin for BallPlugin {
 }
 
 fn render_ball(mut commands: Commands) {
+    // randomize initial ball direction
+    let mut rng = thread_rng();
+    let initial_direction = Vec2::new(rng.gen_range(-0.6..0.6), rng.gen_range(-0.7..-0.1));
     // Ball
     commands
         .spawn()
@@ -52,7 +55,7 @@ fn render_ball(mut commands: Commands) {
             },
             ..default()
         })
-        .insert(Velocity(INITIAL_BALL_DIRECTION.normalize() * BALL_SPEED));
+        .insert(Velocity(initial_direction.normalize() * BALL_SPEED));
 }
 
 fn apply_velocity(time: Res<Time>, mut query: Query<(&mut Transform, &Velocity)>) {
@@ -64,7 +67,7 @@ fn apply_velocity(time: Res<Time>, mut query: Query<(&mut Transform, &Velocity)>
 
 fn check_for_collisions(
     mut commands: Commands,
-    // mut scoreboard: ResMut<Scoreboard>,
+    mut game_data: ResMut<GameData>,
     mut ball_query: Query<(&mut Velocity, &Transform), With<Ball>>,
     collider_query: Query<(Entity, &Transform, Option<&Brick>), With<Collider>>,
 ) {
@@ -84,7 +87,7 @@ fn check_for_collisions(
             // info!("we have a collision! {:?}, ball: {}, transform: {}", collision, ball_transform.translation, transform.translation);
             // Bricks should be despawned and increment the scoreboard on collision
             if maybe_brick.is_some() {
-                // scoreboard.score += 1;
+                game_data.score += 1;
                 commands.entity(collider_entity).despawn();
             }
 
