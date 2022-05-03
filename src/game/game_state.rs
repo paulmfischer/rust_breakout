@@ -1,4 +1,4 @@
-use crate::{menu_state::GameState, utilities::despawn_entities};
+use crate::{utilities::despawn_entities, GameState};
 use bevy::{app::AppExit, prelude::*};
 
 use super::{

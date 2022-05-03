@@ -1,13 +1,6 @@
 use bevy::{app::AppExit, prelude::*};
 
-use crate::utilities::despawn_entities;
-
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
-pub enum GameState {
-    MainMenu,
-    InGame,
-    // Paused,
-}
+use crate::{utilities::despawn_entities, GameState};
 
 pub struct MenuPlugin;
 

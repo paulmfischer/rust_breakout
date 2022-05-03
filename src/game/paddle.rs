@@ -1,5 +1,6 @@
-use crate::menu_state::GameState;
 use bevy::{math::const_vec3, prelude::*};
+
+use crate::GameState;
 
 use super::{
     components::{Collider, GameEntity},

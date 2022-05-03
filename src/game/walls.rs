@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{menu_state::GameState, utilities::despawn_entities};
+use crate::{utilities::despawn_entities, GameState};
 
 use super::components::Collider;
 

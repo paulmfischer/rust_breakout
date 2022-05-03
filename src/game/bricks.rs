@@ -2,14 +2,14 @@ use bevy::{math::const_vec2, prelude::*};
 
 use crate::{
     game::components::{Brick, Collider},
-    menu_state::GameState,
+    GameState,
 };
 
 use super::walls::{X_OFFSET, Y_OFFSET};
 
 const BRICK_COLOR: Color = Color::rgb(0.6, 0.5, 0.4);
 const BRICK_SIZE: Vec2 = const_vec2!([100., 30.]);
-const GAP_BETWEEN_PADDLE_AND_BRICKS: f32 = 270.0;
+const GAP_BETWEEN_PADDLE_AND_BRICKS: f32 = 300.0;
 const GAP_BETWEEN_BRICKS: f32 = 5.0;
 // These values are lower bounds, as the number of bricks is computed
 const GAP_BETWEEN_BRICKS_AND_SIDES: f32 = 20.0;

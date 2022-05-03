@@ -1,11 +1,11 @@
 use bevy::{
-    math::{const_vec2, const_vec3},
+    math::const_vec3,
     prelude::*,
     sprite::collide_aabb::{collide, Collision},
 };
 use rand::{thread_rng, Rng};
 
-use crate::menu_state::GameState;
+use crate::GameState;
 
 use super::components::{Brick, Collider, GameData, GameEntity};
 

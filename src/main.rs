@@ -6,12 +6,19 @@ mod game;
 mod menu_state;
 mod utilities;
 
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+pub enum GameState {
+    MainMenu,
+    InGame,
+    // Paused,
+}
+
 const BACKGROUND_COLOR: Color = Color::rgb(0.20, 0.20, 0.20);
 fn main() {
     App::new()
         .insert_resource(WindowDescriptor {
-            width: 1280.0,
-            height: 720.0,
+            width: 800.0,
+            height: 600.0,
             title: "Breakout!!".to_string(),
             // vsync: false,
             mode: WindowMode::Windowed,
