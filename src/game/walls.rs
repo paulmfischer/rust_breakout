@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{utilities::despawn_entities, GameState};
 
-use super::components::Collider;
+use super::components::{Collider, FailZone};
 
 const WALL_THICKNESS: f32 = 10.0;
 const WALL_COLOR: Color = Color::rgb(0.8, 0.8, 0.8);
@@ -30,12 +30,9 @@ fn render_walls(mut commands: Commands, windows: Res<Windows>) {
     commands.spawn_bundle(WallBundle::new(WallLocation::Left, window));
     commands.spawn_bundle(WallBundle::new(WallLocation::Right, window));
     commands.spawn_bundle(WallBundle::new(WallLocation::Top, window));
-    commands.spawn_bundle(WallBundle::new(WallLocation::Bottom, window));
+    commands.spawn_bundle(WallBundle::new(WallLocation::Bottom, window)).insert(FailZone);
 }
 
-// pub fn despawn_walls(commands: Commands, query: Query<Entity, With<Wall>>) {
-//     despawn_entities::<Wall>(commands, query);
-// }
 
 enum WallLocation {
     Left,

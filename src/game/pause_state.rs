@@ -11,7 +11,7 @@ pub struct PausePlugin;
 
 impl Plugin for PausePlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(GameState::Paused).with_system(setup_menu))
+        app.add_system_set(SystemSet::on_enter(GameState::Paused).with_system(render_menu))
             .add_system_set(
                 SystemSet::on_update(GameState::Paused)
                     .with_system(utilities::menu_interaction)
@@ -23,8 +23,8 @@ impl Plugin for PausePlugin {
     }
 }
 
-fn setup_menu(commands: Commands, asset_server: Res<AssetServer>, windows: Res<Windows>) {
-    utilities::setup_menu(
+fn render_menu(commands: Commands, asset_server: Res<AssetServer>, windows: Res<Windows>) {
+    utilities::render_menu(
         commands,
         asset_server,
         windows,
@@ -36,7 +36,7 @@ fn setup_menu(commands: Commands, asset_server: Res<AssetServer>, windows: Res<W
 }
 
 fn select_menu_item(
-    keyboard_input: Res<Input<KeyCode>>,
+    mut keyboard_input: ResMut<Input<KeyCode>>,
     selected_option_query: Query<&MenuButtonAction, With<SelectedOption>>,
     mut exit: EventWriter<AppExit>,
     mut app_state: ResMut<State<GameState>>,
@@ -47,9 +47,11 @@ fn select_menu_item(
         match menu_action {
             MenuButtonAction::Play => {
                 app_state.pop().unwrap();
+                keyboard_input.clear()
             }
             MenuButtonAction::Quit => {
                 exit.send(AppExit);
+                keyboard_input.clear();
             }
         }
     }

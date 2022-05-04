@@ -7,7 +7,7 @@ use super::{
     components::{GameData, GameEntity, Scoreboard},
     paddle::PaddlePlugin,
     pause_state::PausePlugin,
-    walls::WallsPlugin,
+    walls::WallsPlugin, lose_state::LosePlugin,
 };
 
 pub struct GamePlugin;
@@ -20,6 +20,7 @@ impl Plugin for GamePlugin {
             .add_plugin(WallsPlugin)
             .add_plugin(BricksPlugin)
             .add_plugin(PausePlugin)
+            .add_plugin(LosePlugin)
             // setup when entering the state
             .add_system_set(SystemSet::on_enter(GameState::InGame).with_system(setup_game))
             .add_system_set(
@@ -69,9 +70,10 @@ fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>) {
         .insert(GameEntity);
 }
 
-fn handle_pause_game(keyboard_input: Res<Input<KeyCode>>, mut app_state: ResMut<State<GameState>>) {
+fn handle_pause_game(mut keyboard_input: ResMut<Input<KeyCode>>, mut app_state: ResMut<State<GameState>>) {
     if keyboard_input.just_pressed(KeyCode::Escape) {
         app_state.push(GameState::Paused).unwrap();
+        keyboard_input.clear();
     }
 }
 

@@ -11,6 +11,7 @@ pub enum GameState {
     MainMenu,
     InGame,
     Paused,
+    GameOver,
 }
 
 const BACKGROUND_COLOR: Color = Color::rgb(0.20, 0.20, 0.20);

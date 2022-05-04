@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
-const TEXT_COLOR: Color = Color::WHITE;
-const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
-const SELECTED_BUTTON: Color = Color::rgb(0.35, 0.75, 0.35);
+pub const TEXT_COLOR: Color = Color::WHITE;
+pub const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
+pub const SELECTED_BUTTON: Color = Color::rgb(0.35, 0.75, 0.35);
 
 #[derive(Component)]
 pub struct MenuEntity;
@@ -27,7 +27,7 @@ pub fn despawn_entities<T: Component>(mut commands: Commands, query: Query<Entit
     query.for_each(|entity| commands.entity(entity).despawn_recursive());
 }
 
-pub fn setup_menu(
+pub fn render_menu(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     windows: Res<Windows>,
@@ -79,7 +79,6 @@ pub fn setup_menu(
                 },
                 text: Text::with_section(
                     menu_options.title,
-                    // "Breakout!!",
                     TextStyle {
                         font: font.clone(),
                         font_size: (window_height / 4.0).round(),
@@ -102,7 +101,6 @@ pub fn setup_menu(
                     parent.spawn_bundle(TextBundle {
                         text: Text::with_section(
                             menu_options.play_text,
-                            // "Start",
                             button_text_style.clone(),
                             Default::default(),
                         ),

@@ -12,6 +12,9 @@ pub struct Brick;
 #[derive(Component)]
 pub struct Scoreboard;
 
+#[derive(Component)]
+pub struct FailZone;
+
 pub struct GameData {
     pub score: i32,
 }
