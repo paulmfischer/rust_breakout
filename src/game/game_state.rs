@@ -1,11 +1,12 @@
 use crate::{utilities::despawn_entities, GameState};
-use bevy::{app::AppExit, prelude::*};
+use bevy::prelude::*;
 
 use super::{
     ball::BallPlugin,
     bricks::BricksPlugin,
     components::{GameData, GameEntity, Scoreboard},
     paddle::PaddlePlugin,
+    pause_state::PausePlugin,
     walls::WallsPlugin,
 };
 
@@ -18,6 +19,7 @@ impl Plugin for GamePlugin {
             .add_plugin(BallPlugin)
             .add_plugin(WallsPlugin)
             .add_plugin(BricksPlugin)
+            .add_plugin(PausePlugin)
             // setup when entering the state
             .add_system_set(SystemSet::on_enter(GameState::InGame).with_system(setup_game))
             .add_system_set(
@@ -25,7 +27,7 @@ impl Plugin for GamePlugin {
             )
             .add_system_set(
                 SystemSet::on_update(GameState::InGame)
-                    .with_system(handle_exit)
+                    .with_system(handle_pause_game)
                     .with_system(update_score),
             );
     }
@@ -67,9 +69,9 @@ fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>) {
         .insert(GameEntity);
 }
 
-fn handle_exit(keyboard_input: Res<Input<KeyCode>>, mut exit: EventWriter<AppExit>) {
+fn handle_pause_game(keyboard_input: Res<Input<KeyCode>>, mut app_state: ResMut<State<GameState>>) {
     if keyboard_input.just_pressed(KeyCode::Escape) {
-        exit.send(AppExit);
+        app_state.push(GameState::Paused).unwrap();
     }
 }
 

@@ -1,6 +1,4 @@
 ## Breakout in Bevy Rust
-<!-- ![Breakout in Bevy Rust](rust_breakout.png "Breakout in Bevy Rust") -->
-
 Learning Rust/Bevy by making the game breakout.
 
 Learning points:
@@ -9,3 +7,13 @@ Learning points:
   - Changing of states
 - Menu interaction
 - Collision detection
+
+## Different states
+### Menu
+![Breakout Menu](breakout_menu.png "Breakout Menu")
+
+### In Game
+![Breakout In Game](breakout_in_game.png "Breakout In Game")
+
+### Paused
+![Breakout Paused](breakout_paused.png "Breakout Paused")

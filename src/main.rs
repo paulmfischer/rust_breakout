@@ -10,7 +10,7 @@ mod utilities;
 pub enum GameState {
     MainMenu,
     InGame,
-    // Paused,
+    Paused,
 }
 
 const BACKGROUND_COLOR: Color = Color::rgb(0.20, 0.20, 0.20);
