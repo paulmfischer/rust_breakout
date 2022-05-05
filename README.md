@@ -17,3 +17,6 @@ Learning points:
 
 ### Paused
 ![Breakout Paused](breakout_paused.png "Breakout Paused")
+
+### Game Over
+![Breakout Game Over](breakout_game_over.png "Breakout Game Over")
