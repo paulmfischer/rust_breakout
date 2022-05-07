@@ -1,6 +1,7 @@
-use bevy::{app::AppExit, prelude::*};
+use bevy::prelude::*;
 
 use crate::{
+    state_plugin::StateChange,
     utilities::{
         self, despawn_entities, MenuButtonAction, MenuEntity, MenuOptions, SelectedOption,
     },
@@ -40,22 +41,19 @@ fn render_menu(commands: Commands, asset_server: Res<AssetServer>, windows: Res<
 }
 
 fn select_menu_item(
-    mut keyboard_input: ResMut<Input<KeyCode>>,
+    keyboard_input: ResMut<Input<KeyCode>>,
     selected_option_query: Query<&MenuButtonAction, With<SelectedOption>>,
-    mut exit: EventWriter<AppExit>,
-    mut app_state: ResMut<State<GameState>>,
+    mut event_state_change: EventWriter<StateChange>,
 ) {
     let menu_action = selected_option_query.single();
 
     if keyboard_input.just_pressed(KeyCode::Return) {
         match menu_action {
             MenuButtonAction::Play => {
-                app_state.set(GameState::InGame).unwrap();
-                keyboard_input.clear();
+                event_state_change.send(StateChange::Set(GameState::InGame));
             }
             MenuButtonAction::Quit => {
-                exit.send(AppExit);
-                keyboard_input.clear();
+                event_state_change.send(StateChange::Exit);
             }
         }
     }

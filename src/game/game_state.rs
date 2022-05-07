@@ -1,13 +1,14 @@
-use crate::{utilities::despawn_entities, GameState};
+use crate::{state_plugin::StateChange, utilities::despawn_entities, GameState};
 use bevy::prelude::*;
 
 use super::{
     ball::BallPlugin,
     bricks::BricksPlugin,
     components::{GameData, GameEntity, Scoreboard},
+    lose_state::LosePlugin,
     paddle::PaddlePlugin,
     pause_state::PausePlugin,
-    walls::WallsPlugin, lose_state::LosePlugin,
+    walls::WallsPlugin,
 };
 
 pub struct GamePlugin;
@@ -70,10 +71,12 @@ fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>) {
         .insert(GameEntity);
 }
 
-fn handle_pause_game(mut keyboard_input: ResMut<Input<KeyCode>>, mut app_state: ResMut<State<GameState>>) {
+fn handle_pause_game(
+    keyboard_input: ResMut<Input<KeyCode>>,
+    mut event_state_change: EventWriter<StateChange>,
+) {
     if keyboard_input.just_pressed(KeyCode::Escape) {
-        app_state.push(GameState::Paused).unwrap();
-        keyboard_input.clear();
+        event_state_change.send(StateChange::Push(GameState::Paused));
     }
 }
 

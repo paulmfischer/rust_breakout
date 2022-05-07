@@ -138,7 +138,7 @@ pub fn menu_interaction(
                 return;
             }
 
-            if let Some(_) = selected_option {
+            if selected_option.is_some() {
                 *button_color = NORMAL_BUTTON.into();
                 commands.entity(button_entity).remove::<SelectedOption>();
                 removed_selected = true;
@@ -155,7 +155,7 @@ pub fn menu_interaction(
                 return;
             }
 
-            if let Some(_) = selected_option {
+            if selected_option.is_some() {
                 *button_color = NORMAL_BUTTON.into();
                 commands.entity(button_entity).remove::<SelectedOption>();
                 removed_selected = true;
